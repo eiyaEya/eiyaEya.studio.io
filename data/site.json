@@ -1,13 +1,15 @@
 {
   "site": {
-    "url": "https://eiyaeya.github.io/",
-    "displayUrl": "ruiquan.studio",
+    "url": "https://eiyaeya.github.io/eiyaEya.studio.io/",
+    "displayUrl": "eiyaeya.github.io/eiyaEya.studio.io",
     "qrImage": "assets/site-qr.png"
   },
   "github": {
     "owner": "eiyaEya",
-    "repo": "eiyaEya.github.io",
-    "branch": "main"
+    "repo": "eiyaEya.studio.io",
+    "branch": "main",
+    "private": false,
+    "issuesEnabled": false
   },
   "profile": {
     "name": "ruiquan.studio",
@@ -21,9 +23,9 @@
     ]
   },
   "modules": [
-    { "route": "projects", "title": "Project", "summary": "开源状态与下载" },
-    { "route": "blog", "title": "Blog", "summary": "生活和工作随笔" },
-    { "route": "contact", "title": "Contact", "summary": "联系方式和留言" }
+    { "route": "projects", "title": "项目", "summary": "状态与成果" },
+    { "route": "blog", "title": "随笔", "summary": "生活和工作" },
+    { "route": "contact", "title": "联系", "summary": "邮箱与留言" }
   ],
   "feed": [
     {
@@ -145,8 +147,8 @@
     },
     {
       "label": "访客留言",
-      "value": "通过 GitHub Issues 留言互动",
-      "href": "https://github.com/eiyaEya/eiyaEya.github.io/issues/new?labels=visitor-feedback",
+      "value": "通过邮件留言互动",
+      "href": "mailto:ruiquan165@gmail.com?subject=ruiquan.studio%20访客留言",
       "action": "留言"
     }
   ]
