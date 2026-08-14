@@ -7,6 +7,7 @@ const navItems = [...document.querySelectorAll(".nav-item")];
 let siteData;
 let activeChannel = "推荐";
 let activeQuery = "";
+let detailTrigger = null;
 
 init();
 
@@ -18,6 +19,7 @@ async function init() {
     window.addEventListener("hashchange", renderRoute);
     document.addEventListener("click", handleClick);
     document.addEventListener("input", handleInput);
+    document.addEventListener("keydown", handleKeydown);
     renderRoute();
   } catch (error) {
     app.innerHTML = `
@@ -30,9 +32,15 @@ async function init() {
 }
 
 function renderRoute() {
+  closeDetail();
   const route = (location.hash || "#home").replace("#", "");
   const normalized = ["home", "projects", "blog", "contact"].includes(route) ? route : "home";
-  navItems.forEach((item) => item.classList.toggle("is-active", item.dataset.route === normalized));
+  navItems.forEach((item) => {
+    const isActive = item.dataset.route === normalized;
+    item.classList.toggle("is-active", isActive);
+    if (isActive) item.setAttribute("aria-current", "page");
+    else item.removeAttribute("aria-current");
+  });
 
   const views = {
     home: renderHome,
@@ -53,7 +61,7 @@ function renderHome() {
           <span aria-hidden="true">⌕</span>
           <input id="homeSearch" type="search" value="${escapeHtml(activeQuery)}" placeholder="搜索项目 / 随笔 / 动态" />
         </label>
-        <a class="publish-button" href="#contact" aria-label="联系">+</a>
+        <a class="publish-button" href="#contact" aria-label="联系">✉</a>
       </div>
 
       <section class="profile-strip">
@@ -70,30 +78,32 @@ function renderHome() {
         </div>
       </section>
 
-      <div class="metric-strip">
-        ${profile.metrics
+      <nav class="module-links" aria-label="主要内容入口">
+        ${siteData.modules
           .map(
-            (metric) => `
-              <div class="metric">
-                <strong>${escapeHtml(metric.value)}</strong>
-                <span>${escapeHtml(metric.label)}</span>
-              </div>
+            (module) => `
+              <a href="#${escapeHtml(module.route)}">
+                <strong>${escapeHtml(module.title)}</strong>
+                <span>${escapeHtml(module.summary)}</span>
+              </a>
             `,
           )
           .join("")}
-      </div>
+      </nav>
 
       <nav class="channel-tabs" aria-label="内容频道">
         ${channels()
           .map(
             (channel) => `
-              <button class="channel-tab ${channel === activeChannel ? "is-active" : ""}" data-channel="${channel}" type="button">
+              <button class="channel-tab ${channel === activeChannel ? "is-active" : ""}" data-channel="${channel}" type="button" aria-pressed="${channel === activeChannel}">
                 ${escapeHtml(channel)}
               </button>
             `,
           )
           .join("")}
       </nav>
+
+      <p class="interaction-note">喜欢状态仅保存在当前设备。</p>
 
       <div id="homeFeed">
         ${renderHomeFeed()}
@@ -113,6 +123,7 @@ function renderHomeFeed() {
     `;
   }
   return `
+    <p class="feed-status" role="status">共 ${notes.length} 条内容</p>
     <div class="feed-masonry">
       ${notes.map((note) => renderNoteCard(note)).join("")}
     </div>
@@ -123,7 +134,7 @@ function renderProjects() {
   const projectNotes = siteData.projects.map(projectToNote);
   return `
     <section class="view">
-      ${renderPageIntro("Project", "项目也按笔记方式展示：状态、标签、下载入口和成果说明。")}
+      ${renderPageIntro("项目", "用笔记方式展示项目状态、技术标签与阶段成果；可用资源会在详情中提供。")}
       <div class="note-list-grid">
         ${projectNotes.map((note) => renderWideNote(note)).join("")}
       </div>
@@ -135,7 +146,7 @@ function renderBlog() {
   const blogNotes = siteData.blog.map(blogToNote);
   return `
     <section class="view">
-      ${renderPageIntro("Blog", "生活、工作和阶段性复盘，点开像看一篇笔记。")}
+      ${renderPageIntro("随笔", "记录生活、工作和阶段性复盘；当前以图片和摘要为主。")}
       <div class="note-list-grid">
         ${blogNotes.map((note) => renderWideNote(note)).join("")}
       </div>
@@ -148,12 +159,12 @@ function renderContact() {
   const displayUrl = siteData.site.displayUrl || siteData.site.url;
   return `
     <section class="view">
-      ${renderPageIntro("Contact", "合作、交流和简历访问入口。")}
+      ${renderPageIntro("联系", "合作、交流和个人主页访问入口。")}
       <div class="contact-grid">
         ${siteData.contact
           .map(
             (item) => `
-              <a class="contact-card" href="${item.href}" target="_blank" rel="noreferrer">
+              <a class="contact-card" href="${safeHref(item.href)}"${externalLinkAttrs(item.href)}>
                 <span class="contact-main">
                   <strong>${escapeHtml(item.label)}</strong>
                   <span>${escapeHtml(item.value)}</span>
@@ -165,12 +176,12 @@ function renderContact() {
           .join("")}
       </div>
       <div class="notice-card">
-        <p>网站地址：<a href="${siteData.site.url}" target="_blank" rel="noreferrer">${escapeHtml(displayUrl)}</a></p>
+        <p>网站地址：<a href="${safeHref(siteData.site.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(displayUrl)}</a></p>
       </div>
       <article class="project-card qr-card">
         <img src="${qrImage}" alt="个人网站二维码" />
         <div class="content-pad">
-          <h2 class="card-title">简历二维码</h2>
+          <h2 class="card-title">网站访问二维码</h2>
           <p class="card-copy">扫码进入手机端个人主页。</p>
           <div class="action-row">
             <a class="primary-button" href="${qrImage}" download>下载二维码</a>
@@ -196,7 +207,8 @@ function renderPageIntro(title, copy) {
 
 function renderNoteCard(note) {
   return `
-    <article class="note-card xhs-note" data-open-note="${note.key}" tabindex="0">
+    <article class="note-card xhs-note">
+      <button class="card-open-button" data-open-note="${note.key}" type="button" aria-label="查看${escapeHtml(note.title)}详情"></button>
       <img src="${note.image}" alt="${escapeHtml(note.title)}" />
       <div class="note-body">
         <div class="note-chip-row">
@@ -209,7 +221,7 @@ function renderNoteCard(note) {
             <img src="${siteData.profile.avatar}" alt="" />
             ruiquan
           </span>
-          <button class="like-button" data-like-id="${note.likeId}" type="button" aria-label="点赞">
+          <button class="like-button ${readLikes()[note.likeId] ? "is-liked" : ""}" data-like-id="${note.likeId}" type="button" aria-label="点赞" aria-pressed="${Boolean(readLikes()[note.likeId])}">
             <span aria-hidden="true">♡</span>
             <span>${likeCount(note.likeId, note.likes)}</span>
           </button>
@@ -221,7 +233,7 @@ function renderNoteCard(note) {
 
 function renderWideNote(note) {
   return `
-    <article class="wide-note" data-open-note="${note.key}" tabindex="0">
+    <article class="wide-note">
       <img src="${note.image}" alt="${escapeHtml(note.title)}" />
       <div class="wide-note-body">
         <div class="card-kicker">
@@ -234,7 +246,7 @@ function renderWideNote(note) {
           ${note.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
         </div>
         <div class="note-actions">
-          <button class="like-button" data-like-id="${note.likeId}" type="button">
+          <button class="like-button ${readLikes()[note.likeId] ? "is-liked" : ""}" data-like-id="${note.likeId}" type="button" aria-label="点赞" aria-pressed="${Boolean(readLikes()[note.likeId])}">
             <span aria-hidden="true">♡</span>
             <span>${likeCount(note.likeId, note.likes)}</span>
           </button>
@@ -266,6 +278,7 @@ function handleClick(event) {
     activeChannel = channelButton.dataset.channel;
     document.querySelectorAll("[data-channel]").forEach((button) => {
       button.classList.toggle("is-active", button.dataset.channel === activeChannel);
+      button.setAttribute("aria-pressed", String(button.dataset.channel === activeChannel));
     });
     const feed = document.querySelector("#homeFeed");
     if (feed) feed.innerHTML = renderHomeFeed();
@@ -278,9 +291,37 @@ function handleClick(event) {
     return;
   }
 
+  if (event.target.classList.contains("detail-overlay")) {
+    closeDetail();
+    return;
+  }
+
   const openTarget = event.target.closest("[data-open-note]");
   if (openTarget) {
-    openDetail(openTarget.dataset.openNote);
+    openDetail(openTarget.dataset.openNote, openTarget);
+  }
+}
+
+function handleKeydown(event) {
+  if (event.key === "Escape" && document.querySelector(".detail-overlay")) {
+    closeDetail();
+    return;
+  }
+
+  if (event.key === "Tab") {
+    const dialog = document.querySelector(".detail-sheet");
+    if (!dialog) return;
+    const focusable = [...dialog.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')];
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 }
 
@@ -288,17 +329,25 @@ function toggleLike(button) {
   const id = button.dataset.likeId;
   const likes = readLikes();
   likes[id] = !likes[id];
-  localStorage.setItem(LIKE_KEY, JSON.stringify(likes));
-  button.classList.toggle("is-liked", likes[id]);
-  const countNode = button.querySelector("span:last-child");
-  const current = Number(countNode.textContent);
-  countNode.textContent = String(Math.max(0, current + (likes[id] ? 1 : -1)));
+  try {
+    localStorage.setItem(LIKE_KEY, JSON.stringify(likes));
+  } catch {
+    return;
+  }
+  document.querySelectorAll(`[data-like-id="${CSS.escape(id)}"]`).forEach((likeButton) => {
+    likeButton.classList.toggle("is-liked", likes[id]);
+    likeButton.setAttribute("aria-pressed", String(likes[id]));
+    const countNode = likeButton.querySelector("span:last-child");
+    const note = allNotes().find((item) => item.likeId === id);
+    if (countNode && note) countNode.textContent = likeCount(id, note.likes);
+  });
 }
 
-function openDetail(key) {
+function openDetail(key, trigger = document.activeElement) {
   const note = allNotes().find((item) => item.key === key);
   if (!note) return;
   closeDetail();
+  detailTrigger = trigger instanceof HTMLElement ? trigger : null;
 
   const overlay = document.createElement("div");
   overlay.className = "detail-overlay";
@@ -328,14 +377,14 @@ function openDetail(key) {
         <section class="comment-preview">
           <div class="comment-head">
             <strong>访客互动</strong>
-            <span>GitHub Issues</span>
+            <span>${siteData.github.issuesEnabled === true ? "GitHub Issues" : "Email"}</span>
           </div>
-          <p>为了不暴露后台，评论会跳转到 GitHub 留言页。你可以公开留言，我登录 GitHub 后回复。</p>
-          <a class="primary-button" href="${issueUrl(note.type === "project" ? "项目交流" : "笔记评论", note.title)}" target="_blank" rel="noreferrer">去评论</a>
+          <p>${siteData.github.issuesEnabled === true ? "评论会跳转到 GitHub 留言页，你可以公开留言。" : "留言会打开邮件客户端，并自动填写主题和相关内容。"}</p>
+          <a class="primary-button" href="${issueUrl(note.type === "project" ? "项目交流" : "笔记评论", note.title)}"${siteData.github.issuesEnabled === true ? ' target="_blank" rel="noopener noreferrer"' : ""}>去评论</a>
         </section>
       </div>
       <footer class="detail-toolbar">
-        <button class="like-button" data-like-id="${note.likeId}" type="button">
+        <button class="like-button ${readLikes()[note.likeId] ? "is-liked" : ""}" data-like-id="${note.likeId}" type="button" aria-label="点赞" aria-pressed="${Boolean(readLikes()[note.likeId])}">
           <span aria-hidden="true">♡</span>
           <span>${likeCount(note.likeId, note.likes)}</span>
         </button>
@@ -346,6 +395,8 @@ function openDetail(key) {
   `;
   document.body.appendChild(overlay);
   document.body.classList.add("is-detail-open");
+  document.querySelector(".app-shell")?.setAttribute("inert", "");
+  overlay.querySelector(".detail-close")?.focus();
 }
 
 function renderDetailActions(note) {
@@ -355,12 +406,12 @@ function renderDetailActions(note) {
       ${
         note.sourceUrl
           ? `<a class="secondary-button" href="${note.sourceUrl}" target="_blank" rel="noreferrer">源码</a>`
-          : `<span class="ghost-button button-disabled">源码未公开</span>`
+          : `<span class="ghost-button button-disabled">暂不提供源码</span>`
       }
       ${
         note.downloadUrl
           ? `<a class="primary-button" href="${note.downloadUrl}" target="_blank" rel="noreferrer">下载</a>`
-          : `<span class="ghost-button button-disabled">下载整理中</span>`
+          : `<span class="ghost-button button-disabled">暂无下载</span>`
       }
     </div>
   `;
@@ -369,6 +420,9 @@ function renderDetailActions(note) {
 function closeDetail() {
   document.querySelector(".detail-overlay")?.remove();
   document.body.classList.remove("is-detail-open");
+  document.querySelector(".app-shell")?.removeAttribute("inert");
+  detailTrigger?.focus();
+  detailTrigger = null;
 }
 
 function channels() {
@@ -454,7 +508,7 @@ function contactToNote() {
     key: "contact-card",
     type: "contact",
     title: "联系 ruiquan.studio",
-    summary: "通过邮箱、GitHub 或访客留言和我交流，也可以下载简历二维码。",
+    summary: "通过邮箱、GitHub 或访客留言和我交流，也可以下载网站访问二维码。",
     date: "Contact",
     likes: 8,
     likeId: "contact-card",
@@ -464,9 +518,9 @@ function contactToNote() {
   };
 }
 
-function likeCount(id, baseCount) {
+function likeCount(id) {
   const liked = Boolean(readLikes()[id]);
-  return String(baseCount + (liked ? 1 : 0));
+  return String(liked ? 1 : 0);
 }
 
 function readLikes() {
@@ -478,12 +532,39 @@ function readLikes() {
 }
 
 function issueUrl(label, title) {
+  if (siteData.github.issuesEnabled !== true) {
+    const email = siteData.contact
+      .find((item) => String(item.href || "").startsWith("mailto:"))
+      ?.href.slice("mailto:".length)
+      .split("?")[0];
+    if (!email) return "#contact";
+    const params = new URLSearchParams({
+      subject: `[${label}] ${title}`,
+      body: `来自 ruiquan.studio 的访客互动：${title}`,
+    });
+    return `mailto:${email}?${params.toString()}`;
+  }
   const params = new URLSearchParams({
     title: `[${label}] ${title}`,
     body: `来自 ruiquan.studio 的访客互动：${title}`,
     labels: "visitor-feedback",
   });
   return `https://github.com/${siteData.github.owner}/${siteData.github.repo}/issues/new?${params.toString()}`;
+}
+
+function safeHref(value) {
+  const href = String(value || "").trim();
+  if (href.startsWith("mailto:") || href.startsWith("#")) return escapeHtml(href);
+  try {
+    const url = new URL(href, location.href);
+    return ["http:", "https:"].includes(url.protocol) ? escapeHtml(url.href) : "#";
+  } catch {
+    return "#";
+  }
+}
+
+function externalLinkAttrs(value) {
+  return /^https?:/i.test(String(value || "")) ? ' target="_blank" rel="noopener noreferrer"' : "";
 }
 
 function escapeHtml(value) {
