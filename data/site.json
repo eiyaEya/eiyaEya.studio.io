@@ -12,124 +12,248 @@
     "issuesEnabled": false
   },
   "profile": {
-    "name": "ruiquan.studio",
-    "bio": "把技术、项目和生活记录在一个手机优先的个人主页里。",
-    "avatar": "assets/avatar.png",
-    "tags": ["产品思维", "前端开发", "持续学习"],
+    "name": "桑瑞泉 · Ruiquan Sang",
+    "shortName": "桑瑞泉",
+    "bio": "东南大学电子科学与技术本科生，关注毫米波射频集成电路、计算光谱成像与器件—电路—系统协同研究。",
+    "avatar": "assets/ruiquan-portrait.jpg",
+    "tags": ["毫米波射频", "计算光谱成像", "交叉研究"],
+    "facts": [
+      { "label": "教育背景", "value": "东南大学吴健雄学院 · 电子科学与技术" },
+      { "label": "研究方向", "value": "毫米波射频集成电路 · 微波光子学" },
+      { "label": "工具与能力", "value": "ADS · Lumerical FDTD · Cadence Virtuoso · MATLAB" }
+    ],
     "metrics": [
-      { "label": "项目", "value": "03" },
-      { "label": "随笔", "value": "03" },
-      { "label": "动态", "value": "06" }
+      { "label": "总绩点", "value": "3.5883" },
+      { "label": "CET-4", "value": "584" },
+      { "label": "CET-6", "value": "515" }
+    ],
+    "highlights": [
+      "东南大学“至善学子”奖",
+      "东南大学“优秀本科生党员”",
+      "东南大学电子设计竞赛校级二等奖",
+      "亚琛工业大学 Smart Factories 项目 1.7（良好）"
     ]
   },
   "modules": [
-    { "route": "projects", "title": "项目", "summary": "状态与成果" },
-    { "route": "blog", "title": "随笔", "summary": "生活和工作" },
-    { "route": "contact", "title": "联系", "summary": "邮箱与留言" }
+    { "route": "projects", "title": "项目", "summary": "科研与工程实践" },
+    { "route": "blog", "title": "随笔", "summary": "复盘与研究思考" },
+    { "route": "contact", "title": "联系", "summary": "邮箱与主页入口" }
   ],
   "feed": [
     {
-      "id": "daily-01",
-      "title": "把个人主页重新整理成移动端优先的动态流",
-      "date": "2026-07-29",
-      "likes": 18,
-      "image": "assets/feed-mobile.png"
+      "id": "research-spectral-chip",
+      "title": "从超表面结构到光谱相机：完成一段近两年的科研训练",
+      "summary": "参与GaN超表面结构设计、仿真、流片后测试、光路修正与光谱成像系统集成。",
+      "date": "2026-04",
+      "likes": 0,
+      "image": "assets/srtp-spectral-camera.jpg",
+      "category": "科研动态",
+      "tags": ["GaN", "光谱芯片", "FDTD"]
     },
     {
-      "id": "daily-02",
-      "title": "项目页保留开源状态、下载入口和技术标签",
-      "date": "2026-07-29",
-      "likes": 12,
-      "image": "assets/feed-project.png"
+      "id": "research-sem",
+      "title": "16种GaN微纳结构完成设计、加工与扫描电镜表征",
+      "summary": "团队面向400—1500 nm宽谱调制完成结构筛选，并用实测结果校验设计与加工一致性。",
+      "date": "2026-04",
+      "likes": 0,
+      "image": "assets/srtp-sem-structure.jpg",
+      "category": "项目进展",
+      "tags": ["超表面", "SEM", "微纳结构"]
     },
     {
-      "id": "daily-03",
-      "title": "把生活随笔和工作复盘放在同一个 Blog 里",
-      "date": "2026-07-28",
-      "likes": 21,
-      "image": "assets/feed-blog.png"
-    },
-    {
-      "id": "daily-04",
-      "title": "用 GitHub Pages 做免费网址，用二维码连接简历",
-      "date": "2026-07-28",
-      "likes": 16,
-      "image": "assets/feed-qr.png"
-    },
-    {
-      "id": "daily-05",
-      "title": "数据维护交给 GitHub 登录，访客互动走 Issues",
-      "date": "2026-07-27",
-      "likes": 9,
-      "image": "assets/feed-admin.png"
-    },
-    {
-      "id": "daily-06",
-      "title": "红白配色做点缀，内容密度更接近小红书笔记",
-      "date": "2026-07-27",
-      "likes": 24,
-      "image": "assets/feed-style.png"
+      "id": "engineering-competition",
+      "title": "电子设计竞赛：从PCB版图、焊接到机械结构装配",
+      "summary": "在增益可控放大器与悬挂运动控制系统中承担硬件实现和项目材料整理。",
+      "date": "2025-07",
+      "likes": 0,
+      "image": "assets/competition-pcb-board.jpg",
+      "category": "工程实践",
+      "tags": ["PCB", "硬件", "电子设计"]
     }
   ],
   "projects": [
     {
-      "title": "Mobile Personal Homepage",
-      "summary": "手机端优先的个人主页，包含动态流、项目、随笔、联系方式和安全维护流程。",
-      "period": "2026",
+      "title": "基于超表面的光谱芯片设计与压缩感知重构算法开发",
+      "summary": "面向传统光谱仪体积大、集成度低的问题，团队构建GaN超表面物理编码、光学测试、CMOS集成与计算重构相结合的微型光谱成像链路。",
+      "period": "2024.11—2026.04",
+      "status": "国创结项 · 良好",
+      "statusTone": "is-open",
       "openSource": false,
-      "tags": ["HTML", "CSS", "GitHub Pages"],
-      "image": "assets/project-homepage.png",
+      "tags": ["GaN超表面", "Lumerical FDTD", "光谱成像", "CMOS"],
+      "image": "assets/srtp-optical-platform.jpg",
       "sourceUrl": "",
-      "downloadUrl": ""
+      "downloadUrl": "",
+      "resourcesNote": "完整报告、源代码、原始测量数据与未公开专利材料不对外提供。",
+      "sections": [
+        {
+          "title": "项目目标",
+          "paragraphs": [
+            "以超表面微纳结构替代传统光谱仪中的部分分光元件，通过物理编码与计算重构实现光谱仪的小型化和集成化。",
+            "项目覆盖400—1500 nm宽波段，形成从材料与结构设计、流片表征、光学测试到光谱成像验证的完整研发链路。"
+          ]
+        },
+        {
+          "title": "我的工作",
+          "items": [
+            "基于GaN—蓝宝石材料体系设计亚微米级超结构，并使用Lumerical FDTD仿真其宽谱光调制特性。",
+            "参与超表面样片流片后的扫描电镜表征与光谱测试，自主搭建微区光学测试平台。",
+            "针对显微物镜有限数值孔径导致的仿真—实测偏差，引入真实光路条件并完善仿真设置。",
+            "参与超表面与CMOS传感器集成，搭建光谱芯片相机并验证光谱成像链路。"
+          ]
+        },
+        {
+          "title": "团队成果",
+          "items": [
+            "完成16种GaN微纳结构的设计、加工与实测表征。",
+            "完成显微光路测试平台、超表面—CMOS异质集成和应用成像验证。",
+            "形成3项发明专利成果，其中1项已受理、2项处于申请推进阶段。"
+          ]
+        },
+        {
+          "title": "公开说明",
+          "paragraphs": [
+            "本页面仅展示适合公开的项目概述和个人贡献，不公开完整结题报告、未公开专利文本、源代码、原始测量数据及工艺参数。"
+          ]
+        }
+      ]
     },
     {
-      "title": "Project Showcase Template",
-      "summary": "用于展示项目是否开源、下载链接、技术标签和阶段成果的内容模板。",
-      "period": "2026",
+      "title": "东南大学第二十七届电子设计竞赛",
+      "summary": "完成增益可控放大器和悬挂运动控制系统的硬件实现，覆盖PCB版图、焊接、结构建模、3D打印、装配与项目文档。",
+      "period": "2025.07",
+      "status": "校级二等奖",
+      "statusTone": "is-open",
       "openSource": false,
-      "tags": ["Template", "Portfolio", "Static Data"],
+      "tags": ["PCB", "硬件调试", "3D打印", "运动控制"],
+      "image": "assets/competition-pcb-layout.jpg",
+      "sourceUrl": "",
+      "downloadUrl": "",
+      "resourcesNote": "竞赛源文件与完整技术材料暂未公开。",
+      "sections": [
+        {
+          "title": "设计作品",
+          "items": ["增益可控放大器", "悬挂运动控制系统"]
+        },
+        {
+          "title": "我的工作",
+          "items": [
+            "完成PCB版图绘制、器件焊接与硬件联调。",
+            "参与机械结构建模、3D打印和整机装配。",
+            "负责部分项目论文与答辩材料的整理和排版。"
+          ]
+        },
+        {
+          "title": "项目收获",
+          "paragraphs": [
+            "这次竞赛把电路设计、制造装配、控制调试和技术表达串成了一次完整的工程闭环，也强化了我在有限时间内定位问题和协同推进的能力。"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "毫米波射频芯片研发训练",
+      "summary": "围绕CMOS工艺、微波工程与高频通信电路开展科研训练，使用Keysight ADS完成传输线、Wilkinson功分器及多抽头电感相关设计与仿真。",
+      "period": "2026.07—至今",
+      "status": "持续训练",
+      "statusTone": "is-private",
+      "openSource": false,
+      "tags": ["毫米波射频", "Keysight ADS", "CMOS", "无源器件"],
       "image": "assets/project-showcase.png",
       "sourceUrl": "",
-      "downloadUrl": ""
-    },
-    {
-      "title": "Private Work Notes",
-      "summary": "整理工作复盘、生活记录和阶段性想法；内容通过 GitHub 登录后继续补充。",
-      "period": "长期更新",
-      "openSource": false,
-      "tags": ["Blog", "Notes", "Review"],
-      "image": "assets/project-notes.png",
-      "sourceUrl": "",
-      "downloadUrl": ""
+      "downloadUrl": "",
+      "resourcesNote": "仅展示可公开的训练概述，不公开企业研发资料与设计文件。",
+      "sections": [
+        {
+          "title": "训练内容",
+          "items": [
+            "学习模拟CMOS集成电路、平面微波工程和高频段通信电路与系统等理论。",
+            "学习CMOS工艺与版图绘制，关注版图寄生、工艺和封测对电路性能的影响。",
+            "使用Keysight ADS设计与仿真Ku波段四分之一波长传输线、Wilkinson功分器和多抽头电感相关结构。",
+            "探索螺旋电感低频段单π等效电路模型的参数提取工具。"
+          ]
+        },
+        {
+          "title": "研究目标",
+          "paragraphs": [
+            "以实验室真实需求为牵引，逐步形成从器件、电路到系统的独立研究能力；涉及企业或未公开研发的信息不在本网站披露。"
+          ]
+        }
+      ]
     }
   ],
   "blog": [
     {
-      "id": "post-01",
-      "title": "为什么个人主页也要手机优先",
-      "date": "2026-07-29",
-      "category": "工作随笔",
-      "likes": 22,
-      "image": "assets/blog-mobile.png",
-      "excerpt": "简历、社交软件和二维码带来的访问大多发生在手机端，所以个人主页第一屏要快速展示身份、项目和联系入口。"
+      "id": "research-from-simulation-to-system",
+      "title": "从仿真到流片：把科研落到真实系统",
+      "date": "2026-04",
+      "category": "科研随笔",
+      "likes": 0,
+      "image": "assets/srtp-spectral-chip.jpg",
+      "excerpt": "近两年的光谱芯片项目让我看到，仿真、加工、测试和系统集成之间的每一次偏差，都是研究真正开始的地方。",
+      "tags": ["科研训练", "光谱芯片", "工程思维"],
+      "sections": [
+        {
+          "title": "从理论走向实践",
+          "paragraphs": [
+            "最初吸引我的是把庞大的光谱仪压缩到芯片尺度的想象。真正进入项目后，我从电磁波和光波导理论出发，经历仿真、版图、流片、光路搭建和显微表征，逐渐理解一个器件如何一点点成为可以验证的系统。",
+            "科研并不是让仿真曲线看起来漂亮。显微物镜的数值孔径、加工侧壁、光通量和耦合路径，都可能让理想模型与实测结果产生巨大差异。面对这些偏差，需要回到物理条件和工程边界重新建模。"
+          ]
+        },
+        {
+          "title": "我留下的认识",
+          "paragraphs": [
+            "研究过程既枯燥也浪漫。真正珍贵的不只是结果，而是把问题拆开、与团队协作、不断试错，再让器件、算法和测试链路重新对齐的过程。"
+          ]
+        }
+      ]
     },
     {
-      "id": "post-02",
-      "title": "用 GitHub 承担免费的发布和数据维护",
-      "date": "2026-07-29",
-      "category": "技术记录",
-      "likes": 19,
-      "image": "assets/blog-github.png",
-      "excerpt": "静态页面托管在 GitHub Pages，内容数据放在仓库 JSON 文件里，维护时登录 GitHub 后直接编辑数据文件。"
+      "id": "research-roadmap",
+      "title": "我的研究路线：从器件、电路走向系统",
+      "date": "2026-08",
+      "category": "未来规划",
+      "likes": 0,
+      "image": "assets/project-showcase.png",
+      "excerpt": "以毫米波射频集成电路为主线，从基础积累、科研实践和交叉创新逐步走向具有实际应用价值的成果。",
+      "tags": ["毫米波射频", "研究规划", "交叉创新"],
+      "sections": [
+        {
+          "title": "近期",
+          "paragraphs": [
+            "继续补齐模拟集成电路、微波工程、射频微电子等理论基础，关注工艺、封装和测试等上下游环节；在真实课题中形成器件、电路与系统协同分析的能力。"
+          ]
+        },
+        {
+          "title": "中长期",
+          "paragraphs": [
+            "围绕毫米波射频芯片持续深入，同时探索物理约束下的AI辅助电路设计与微波光子学等交叉方向，希望研究成果能够落到可验证、可制造、可应用的系统中。"
+          ]
+        }
+      ]
     },
     {
-      "id": "post-03",
-      "title": "把生活动态做成图片墙",
-      "date": "2026-07-28",
-      "category": "生活随笔",
-      "likes": 17,
-      "image": "assets/blog-life.png",
-      "excerpt": "比起长篇介绍，图片墙更适合让访客快速感知最近状态，也更接近小红书式的信息浏览节奏。"
+      "id": "engineering-competition-review",
+      "title": "一次电子设计竞赛带来的工程训练",
+      "date": "2025-07",
+      "category": "项目复盘",
+      "likes": 0,
+      "image": "assets/competition-pcb-board.jpg",
+      "excerpt": "当PCB、机械结构、控制系统和答辩材料同时推进时，工程能力体现在让每个环节最终能够一起工作。",
+      "tags": ["电子设计", "硬件", "项目复盘"],
+      "sections": [
+        {
+          "title": "完整闭环",
+          "paragraphs": [
+            "竞赛不只考察电路原理。版图、焊接、机械结构、3D打印、装配、调试和文档表达共同决定最后的结果。任何一个接口没有提前确认，都会在集成时放大成系统问题。"
+          ]
+        },
+        {
+          "title": "经验",
+          "paragraphs": [
+            "这段经历让我更重视任务拆分、接口定义、阶段验证和材料沉淀，也让我看到技术表达同样是工程交付的一部分。"
+          ]
+        }
+      ]
     }
   ],
   "contact": [
@@ -137,6 +261,12 @@
       "label": "Email",
       "value": "ruiquan165@gmail.com",
       "href": "mailto:ruiquan165@gmail.com",
+      "action": "发邮件"
+    },
+    {
+      "label": "东南大学邮箱",
+      "value": "213232306@seu.edu.cn",
+      "href": "mailto:213232306@seu.edu.cn",
       "action": "发邮件"
     },
     {

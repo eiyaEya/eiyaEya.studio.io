@@ -22,6 +22,10 @@ for (const key of ["modules", "feed", "projects", "blog", "contact"]) {
   if (!Array.isArray(data[key])) errors.push(`${key} 必须是数组`);
 }
 
+for (const key of ["facts", "highlights", "metrics", "tags"]) {
+  if (!Array.isArray(data.profile?.[key])) errors.push(`profile.${key} 必须是数组`);
+}
+
 function validateWebUrl(value, label, { allowMail = false, allowEmpty = false } = {}) {
   if (allowEmpty && !value) return;
   try {
@@ -60,6 +64,22 @@ for (const [index, project] of (data.projects || []).entries()) {
 for (const [index, item] of (data.contact || []).entries()) {
   validateWebUrl(item.href, `contact[${index}].href`, { allowMail: true });
 }
+
+function validateSections(sections, label) {
+  if (!Array.isArray(sections) || !sections.length) {
+    errors.push(`${label}.sections 至少需要一个详情章节`);
+    return;
+  }
+  sections.forEach((section, index) => {
+    if (!section.title) errors.push(`${label}.sections[${index}] 缺少 title`);
+    const hasParagraphs = Array.isArray(section.paragraphs) && section.paragraphs.length;
+    const hasItems = Array.isArray(section.items) && section.items.length;
+    if (!hasParagraphs && !hasItems) errors.push(`${label}.sections[${index}] 缺少正文或列表`);
+  });
+}
+
+(data.projects || []).forEach((project, index) => validateSections(project.sections, `projects[${index}]`));
+(data.blog || []).forEach((post, index) => validateSections(post.sections, `blog[${index}]`));
 
 for (const group of ["feed", "blog"]) {
   const ids = new Set();
