@@ -47,7 +47,7 @@ node tools/validate_site.mjs
 ## Known Limitations / 已知限制
 
 - Likes are not shared between visitors or devices. / 喜欢状态不会在不同访客或设备间同步。
-- Blog entries currently contain images and summaries rather than full articles. / 随笔目前以图片和摘要为主，尚无完整正文。
+- Public content is intentionally summarized; original resumes, reports, raw measurements, pending patent documents, and process details are not uploaded. / 公开内容经过有意筛选；原始简历、报告、原始测量数据、未公开专利文本和工艺细节不会上传。
 - Projects without a verified public package show no download link. / 没有可验证公开安装包的项目不会显示下载链接。
 
 ## License Status / 许可状态

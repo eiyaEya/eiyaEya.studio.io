@@ -78,6 +78,39 @@ function renderHome() {
         </div>
       </section>
 
+      <section class="profile-facts" aria-label="个人概览">
+        ${profile.facts
+          .map(
+            (fact) => `
+              <div class="profile-fact">
+                <strong>${escapeHtml(fact.label)}</strong>
+                <span>${escapeHtml(fact.value)}</span>
+              </div>
+            `,
+          )
+          .join("")}
+      </section>
+
+      <section class="metric-strip" aria-label="学业与英语成绩">
+        ${profile.metrics
+          .map(
+            (metric) => `
+              <div class="metric">
+                <strong>${escapeHtml(metric.value)}</strong>
+                <span>${escapeHtml(metric.label)}</span>
+              </div>
+            `,
+          )
+          .join("")}
+      </section>
+
+      <section class="profile-highlights" aria-label="代表性荣誉">
+        <strong>代表性荣誉</strong>
+        <div class="tag-row">
+          ${profile.highlights.map((item) => `<span class="tag">${escapeHtml(item)}</span>`).join("")}
+        </div>
+      </section>
+
       <nav class="module-links" aria-label="主要内容入口">
         ${siteData.modules
           .map(
@@ -146,7 +179,7 @@ function renderBlog() {
   const blogNotes = siteData.blog.map(blogToNote);
   return `
     <section class="view">
-      ${renderPageIntro("随笔", "记录生活、工作和阶段性复盘；当前以图片和摘要为主。")}
+      ${renderPageIntro("随笔", "记录科研过程、工程复盘与研究规划；点开可阅读完整内容。")}
       <div class="note-list-grid">
         ${blogNotes.map((note) => renderWideNote(note)).join("")}
       </div>
@@ -213,15 +246,15 @@ function renderNoteCard(note) {
       <div class="note-body">
         <div class="note-chip-row">
           <span class="mini-chip">${escapeHtml(note.category)}</span>
-          ${note.type === "project" ? `<span class="mini-chip ${note.openSource ? "is-open" : "is-private"}">${note.openSource ? "开源" : "未开源"}</span>` : ""}
+          ${note.type === "project" ? `<span class="mini-chip ${statusToneClass(note.statusTone, note.openSource)}">${escapeHtml(note.status || (note.openSource ? "开源" : "未开源"))}</span>` : ""}
         </div>
         <h3 class="note-title">${escapeHtml(note.title)}</h3>
         <div class="note-meta">
           <span class="author-mini">
             <img src="${siteData.profile.avatar}" alt="" />
-            ruiquan
+            ${escapeHtml(siteData.profile.shortName || siteData.profile.name)}
           </span>
-          <button class="like-button ${readLikes()[note.likeId] ? "is-liked" : ""}" data-like-id="${note.likeId}" type="button" aria-label="点赞" aria-pressed="${Boolean(readLikes()[note.likeId])}">
+          <button class="like-button ${readLikes()[note.likeId] ? "is-liked" : ""}" data-like-id="${note.likeId}" type="button" aria-label="本地喜欢" aria-pressed="${Boolean(readLikes()[note.likeId])}">
             <span aria-hidden="true">♡</span>
             <span>${likeCount(note.likeId, note.likes)}</span>
           </button>
@@ -246,7 +279,7 @@ function renderWideNote(note) {
           ${note.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
         </div>
         <div class="note-actions">
-          <button class="like-button ${readLikes()[note.likeId] ? "is-liked" : ""}" data-like-id="${note.likeId}" type="button" aria-label="点赞" aria-pressed="${Boolean(readLikes()[note.likeId])}">
+          <button class="like-button ${readLikes()[note.likeId] ? "is-liked" : ""}" data-like-id="${note.likeId}" type="button" aria-label="本地喜欢" aria-pressed="${Boolean(readLikes()[note.likeId])}">
             <span aria-hidden="true">♡</span>
             <span>${likeCount(note.likeId, note.likes)}</span>
           </button>
@@ -362,7 +395,7 @@ function openDetail(key, trigger = document.activeElement) {
           <span class="author-mini is-large">
             <img src="${siteData.profile.avatar}" alt="" />
             <span>
-              <strong>ruiquan</strong>
+              <strong>${escapeHtml(siteData.profile.shortName || siteData.profile.name)}</strong>
               <small>${escapeHtml(note.date)} · ${escapeHtml(note.category)}</small>
             </span>
           </span>
@@ -373,6 +406,7 @@ function openDetail(key, trigger = document.activeElement) {
         <div class="tag-row">
           ${note.tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
         </div>
+        ${renderDetailSections(note.sections)}
         ${renderDetailActions(note)}
         <section class="comment-preview">
           <div class="comment-head">
@@ -384,7 +418,7 @@ function openDetail(key, trigger = document.activeElement) {
         </section>
       </div>
       <footer class="detail-toolbar">
-        <button class="like-button ${readLikes()[note.likeId] ? "is-liked" : ""}" data-like-id="${note.likeId}" type="button" aria-label="点赞" aria-pressed="${Boolean(readLikes()[note.likeId])}">
+        <button class="like-button ${readLikes()[note.likeId] ? "is-liked" : ""}" data-like-id="${note.likeId}" type="button" aria-label="本地喜欢" aria-pressed="${Boolean(readLikes()[note.likeId])}">
           <span aria-hidden="true">♡</span>
           <span>${likeCount(note.likeId, note.likes)}</span>
         </button>
@@ -401,6 +435,9 @@ function openDetail(key, trigger = document.activeElement) {
 
 function renderDetailActions(note) {
   if (note.type !== "project") return "";
+  if (!note.sourceUrl && !note.downloadUrl) {
+    return note.resourcesNote ? `<p class="resource-note">${escapeHtml(note.resourcesNote)}</p>` : "";
+  }
   return `
     <div class="action-row">
       ${
@@ -417,6 +454,24 @@ function renderDetailActions(note) {
   `;
 }
 
+function renderDetailSections(sections = []) {
+  return sections
+    .map(
+      (section) => `
+        <section class="detail-section">
+          <h3>${escapeHtml(section.title)}</h3>
+          ${(section.paragraphs || []).map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+          ${
+            section.items?.length
+              ? `<ul>${section.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+              : ""
+          }
+        </section>
+      `,
+    )
+    .join("");
+}
+
 function closeDetail() {
   document.querySelector(".detail-overlay")?.remove();
   document.body.classList.remove("is-detail-open");
@@ -426,7 +481,7 @@ function closeDetail() {
 }
 
 function channels() {
-  return ["推荐", "项目", "随笔", "生活", "技术", "联系"];
+  return ["推荐", "项目", "随笔", "科研", "工程", "联系"];
 }
 
 function filteredNotes() {
@@ -436,12 +491,12 @@ function filteredNotes() {
       activeChannel === "推荐" ||
       (activeChannel === "项目" && note.type === "project") ||
       (activeChannel === "随笔" && note.type === "blog") ||
-      (activeChannel === "生活" && `${note.title} ${note.summary} ${note.category}`.includes("生活")) ||
-      (activeChannel === "技术" && `${note.title} ${note.summary} ${note.tags.join(" ")}`.toLowerCase().match(/github|html|css|pages|技术|项目|前端/)) ||
+      (activeChannel === "科研" && `${note.title} ${note.summary} ${note.tags.join(" ")}`.toLowerCase().match(/科研|射频|光谱|fdtd|ads|cmos|算法|超表面/)) ||
+      (activeChannel === "工程" && `${note.title} ${note.summary} ${note.tags.join(" ")}`.toLowerCase().match(/工程|pcb|硬件|竞赛|焊接|3d打印|运动控制/)) ||
       (activeChannel === "联系" && note.type === "contact");
     const searchMatch =
       !query ||
-      `${note.title} ${note.summary} ${note.category} ${note.tags.join(" ")}`.toLowerCase().includes(query);
+      `${note.title} ${note.summary} ${note.category} ${note.tags.join(" ")} ${note.searchText || ""}`.toLowerCase().includes(query);
     return channelMatch && searchMatch;
   });
 }
@@ -460,13 +515,15 @@ function feedToNote(note) {
     key: `feed-${note.id}`,
     type: "feed",
     title: note.title,
-    summary: note.title,
+    summary: note.summary || note.title,
     date: note.date,
     likes: note.likes,
     likeId: `feed-${note.id}`,
     image: note.image,
-    category: "动态",
-    tags: ["动态", "studio"],
+    category: note.category || "动态",
+    tags: note.tags || ["动态"],
+    sections: note.sections || [],
+    searchText: note.summary || "",
   };
 }
 
@@ -483,8 +540,13 @@ function projectToNote(project, index) {
     category: "项目",
     tags: project.tags,
     openSource: project.openSource,
+    status: project.status,
+    statusTone: project.statusTone,
     sourceUrl: project.sourceUrl,
     downloadUrl: project.downloadUrl,
+    resourcesNote: project.resourcesNote,
+    sections: project.sections || [],
+    searchText: sectionSearchText(project.sections),
   };
 }
 
@@ -499,8 +561,21 @@ function blogToNote(post) {
     likeId: `blog-${post.id}`,
     image: post.image,
     category: post.category,
-    tags: [post.category, "Blog"],
+    tags: post.tags || [post.category, "随笔"],
+    sections: post.sections || [],
+    searchText: sectionSearchText(post.sections),
   };
+}
+
+function sectionSearchText(sections = []) {
+  return sections
+    .flatMap((section) => [section.title, ...(section.paragraphs || []), ...(section.items || [])])
+    .join(" ");
+}
+
+function statusToneClass(value, isOpenSource) {
+  if (value === "is-open" || value === "is-private") return value;
+  return isOpenSource ? "is-open" : "is-private";
 }
 
 function contactToNote() {
